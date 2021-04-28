@@ -156,17 +156,38 @@ for i = 1:no_iter
     x_dstbd(i+1,:) = x_cur(end,:);
 end
 
-function h = get_handler_full_dnmcs_ode(g)
-h = @(t,x,u) full_dnmcs_ode(x,u,g);
+figure('Color', 'w')
+subplot(2, 2, 1)
+plot(x_cur)
+title('x cur')
+
+subplot(2, 2, 2)
+plot(x_dstbd)
+title('x dstbd')
+
+subplot(2, 2, 3)
+plot(y); hold on;
+plot(y_d);
+title('y y_d')
+
+subplot(2, 2, 4)
+plot(I); hold on;
+title('I')
+
+
+
+
+function h = get_handler_full_dnmcs_ode(HCg_model)
+h = @(t,x,u) full_dnmcs_ode(x,u,HCg_model);
 % h = @full_dnmcs_ode;
 % function  dxdt = full_dnmcs_ode(x,u)
-function  dxdt = full_dnmcs_ode(x,u,g)
-    n = g.dof_configuration_space_robot;
+function  dxdt = full_dnmcs_ode(x,u,HCg_model)
+    n = HCg_model.dof_configuration_space_robot;
     
-    H = g.get_H(x(1:n));
-    C = g.get_C(x(1:n), x((n+1):end));
-    gr = g.get_g(x(1:n));        
-    T = g.get_T();   
+    H = HCg_model.get_H(x(1:n));
+    C = HCg_model.get_C(x(1:n), x((n+1):end));
+    gr = HCg_model.get_g(x(1:n));        
+    T = HCg_model.get_T();   
     dxdt = [x((n+1):end); H\(T * u - C * x((n+1):end) - gr)];
 end
 end
